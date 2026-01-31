@@ -1,11 +1,23 @@
+// This function displays text based on errors
+function displayError(errorMessage) {
+    const weatherInformation = document.querySelector(".weather-information");
+    weatherInformation.innerHTML = "";
+    document.getElementById("input-area").value = "";
+
+    let errorMessageElement = document.createElement("h1");
+    errorMessageElement.innerText = errorMessage;
+    errorMessageElement.style.color = "red";
+    errorMessageElement.style.marginBottom = 0;
+
+    weatherInformation.append(errorMessageElement);
+}
+
 // This function displays the actual weatherData recieved from the getWeatherData function
 function displayWeatherData(weatherData) {
     const weatherInformation = document.querySelector(".weather-information");
 
     weatherInformation.innerHTML = "";
     document.getElementById("input-area").value = "";
-
-    console.log(weatherData);
 
     let areaDisplay = document.createElement("h1");
     areaDisplay.innerText = `Weather at ${weatherData.location.name} is ${weatherData.current.condition.text}`;
@@ -24,7 +36,7 @@ function displayWeatherData(weatherData) {
 
 // This function sends a request to the weather API and receives data from it and then returns is
 async function getWeatherData(location) {
-    const key = "API_KEY_GOES_HERE";
+    const key = "70e8a259535f41f082794342263101";
 
     const request = new Request(
         `https://api.weatherapi.com/v1/current.json?key=${key}&q=${location}`,
@@ -37,7 +49,13 @@ async function getWeatherData(location) {
     };
 
     return fetch(request, options)
-        .then((response) => response.json())
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("City Not Found");
+            } else {
+                return response.json();
+            }
+        })
         .then((json) => {
             return json;
         });
@@ -46,9 +64,14 @@ async function getWeatherData(location) {
 // This function handles the click received from the Event Listener for the check button
 async function handleCheckButtonClick() {
     const valueOfInputField = document.getElementById("input-area").value;
-    let weatherData = await getWeatherData(valueOfInputField);
 
-    displayWeatherData(weatherData);
+    try {
+        weatherData = await getWeatherData(valueOfInputField);
+        displayWeatherData(weatherData);
+    } catch (error) {
+        displayError(error);
+        return;
+    }
 }
 
 // This detects the clicking of the check button below the input field
