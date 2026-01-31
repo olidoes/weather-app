@@ -36,7 +36,7 @@ function displayWeatherData(weatherData) {
 
 // This function sends a request to the weather API and receives data from it and then returns is
 async function getWeatherData(location) {
-    const key = "70e8a259535f41f082794342263101";
+    const key = "YOUR_API_KEY";
 
     const request = new Request(
         `https://api.weatherapi.com/v1/current.json?key=${key}&q=${location}`,
